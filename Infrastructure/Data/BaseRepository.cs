@@ -1,6 +1,5 @@
 ﻿using Domain.Interfaces;
 using Domain.Models;
-using Domain.Models.ConsolidatedListFile;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data

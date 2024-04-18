@@ -59,8 +59,7 @@ namespace Infrastructure.Mappers.ConsolidatedListFile
 
         public IEnumerable<Individual> MapCollection(IEnumerable<CONSOLIDATED_LISTINDIVIDUALSINDIVIDUAL> collection)
             => (collection ?? Enumerable.Empty<CONSOLIDATED_LISTINDIVIDUALSINDIVIDUAL>())
-                .Select(Map)
-                .ToList();
+                .Select(Map);
 
         #endregion
 

@@ -15,8 +15,7 @@ namespace Infrastructure.Mappers.ConsolidatedListFile
         public IEnumerable<IndividualPlaceOfBirth> MapCollection(
             IEnumerable<CONSOLIDATED_LISTINDIVIDUALSINDIVIDUALINDIVIDUAL_PLACE_OF_BIRTH> collection)
             => (collection ?? Enumerable.Empty<CONSOLIDATED_LISTINDIVIDUALSINDIVIDUALINDIVIDUAL_PLACE_OF_BIRTH>())
-                .Select(Map)
-                .ToList();
+                .Select(Map);
 
         #endregion
 

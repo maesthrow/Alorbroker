@@ -15,8 +15,7 @@ namespace Infrastructure.Mappers.ConsolidatedListFile
         public IEnumerable<EntityAddress> MapCollection(
             IEnumerable<CONSOLIDATED_LISTENTITIESENTITYENTITY_ADDRESS>? collection)
             => (collection ?? Enumerable.Empty<CONSOLIDATED_LISTENTITIESENTITYENTITY_ADDRESS>())
-                .Select(Map)
-                .ToList();
+                .Select(Map);
 
         #endregion
 

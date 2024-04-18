@@ -37,8 +37,7 @@ namespace Infrastructure.Mappers.ConsolidatedListFile
 
         public IEnumerable<Entity> MapCollection(IEnumerable<CONSOLIDATED_LISTENTITIESENTITY> collection)
             => (collection ?? Enumerable.Empty<CONSOLIDATED_LISTENTITIESENTITY>())
-                .Select(Map)
-                .ToList();
+                .Select(Map);
 
         #endregion
 
