@@ -1,4 +1,4 @@
-﻿using Domain.Models;
+﻿using Domain.Models.ConsolidatedListFile;
 
 namespace Infrastructure.Data.ConsolidatedListFile
 {

@@ -1,9 +1,9 @@
 ﻿using Application.Interfaces;
 using Application.Services;
 using Domain.Interfaces;
-using Domain.Models;
+using Domain.Models.ConsolidatedListFile;
 using Infrastructure.Data.ConsolidatedListFile;
-using Infrastructure.Mappers;
+using Infrastructure.Mappers.ConsolidatedListFile;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

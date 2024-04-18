@@ -1,7 +1,7 @@
 ﻿using Domain.Interfaces;
-using Domain.Models;
+using Domain.Models.ConsolidatedListFile;
 
-namespace Infrastructure.Mappers
+namespace Infrastructure.Mappers.ConsolidatedListFile
 {
 
     public class ConsolidatedListMapper : IMapper<CONSOLIDATED_LIST, ConsolidatedList>
