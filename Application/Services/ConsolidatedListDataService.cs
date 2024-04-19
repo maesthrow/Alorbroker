@@ -1,5 +1,4 @@
-﻿using Application.Interfaces;
-using Domain.Interfaces;
+﻿using Domain.Interfaces;
 using Domain.Models.ConsolidatedListFile;
 
 namespace Application.Services

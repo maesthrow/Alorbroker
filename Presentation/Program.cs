@@ -1,4 +1,6 @@
-﻿using Application.Interfaces;
+﻿using Domain.Interfaces;
+using Infrastructure.FileProcessors;
+using Infrastructure.UserInterfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ConsoleApp
@@ -8,13 +10,18 @@ namespace ConsoleApp
     {
         #region Fields
 
-        private readonly IDataService<CONSOLIDATED_LIST> _dataService;
+        // словарь для хранения соответствий для файлов и их обработчиков: { имя_файла, IFileProcessor }
+        private readonly Dictionary<string, IFileProcessor> _fileSourceDict = new();
 
         #endregion
 
         #region Constructors
 
-        public Program(IDataService<CONSOLIDATED_LIST> dataService) => _dataService = dataService;
+        public Program(IDataService<CONSOLIDATED_LIST> dataService)
+        {
+            _fileSourceDict.Add("consolidated-list.xml",
+                new ConsolidatedListProcessor(dataService, new ConsoleUserInterface()));
+        }
 
         #endregion
 
@@ -22,51 +29,59 @@ namespace ConsoleApp
 
         private static async Task Main(string[] args)
         {
-            var serviceProvider = DiManager.ConfigureServices();
-            var program = serviceProvider.GetRequiredService<Program>();
-            await program.Run();
+            try
+            {
+                var serviceProvider = DiManager.ConfigureServices();
+                var program = serviceProvider.GetRequiredService<Program>();
+                await program.Run();
+            }
+            catch (Exception ex)
+            {
+                UserCloseApp($"Ошибка во время выполнения: {ex.Message}");
+            }
         }
 
-        private static void UserStartProcessFile(string filePath)
+        private static void UserStartProcessFile()
         {
-            Console.WriteLine($"Нажмите Enter для того, чтобы начать обработку файла '{filePath}'");
+            Console.WriteLine("\nНажмите Enter для того, чтобы начать обработку файлов");
             Console.ReadLine();
         }
 
-        private static void UserCloseApp()
+        private static void UserCloseApp(string? afterProcessMessage = null)
         {
-            Console.WriteLine("\nДля выхода нажмите любую клавишу");
-            Console.ReadLine();
+            afterProcessMessage ??= string.Empty;
+            Console.WriteLine($"{afterProcessMessage}\nДля выхода нажмите любую клавишу");
+            Console.ReadKey();
         }
 
         private async Task Run()
         {
-            await ProcessFile("consolidated-list.xml");
-        }
-
-        private async Task ProcessFile(string filePath)
-        {
-            try
+            if (_fileSourceDict.Count == 0)
             {
-                UserStartProcessFile(filePath);
+                UserCloseApp("Не указаны файлы для загрузки данных.");
 
-                Console.WriteLine("Получение данных из файла...");
-                var fullFilePath = Path.Combine(Directory.GetCurrentDirectory(), filePath);
-                var data = await _dataService.LoadDataFromFile(fullFilePath);
-
-                Console.WriteLine("Сохранение в базу данных...");
-                await _dataService.SaveData(data);
-
-                Console.WriteLine("Операция выполнена успешно.");
+                return;
             }
-            catch (Exception ex)
+
+            UserStartProcessFile();
+
+            foreach (var kvp in _fileSourceDict)
             {
-                Console.WriteLine(ex.Message);
+                var filePath = kvp.Key;
+                var processor = kvp.Value;
+
+                try
+                {
+                    var fullFilePath = Path.Combine(Directory.GetCurrentDirectory(), filePath);
+                    await processor.ProcessData(fullFilePath);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
-            finally
-            {
-                UserCloseApp();
-            }
+
+            UserCloseApp("\nОбработка всех файлов завершена.");
         }
 
         #endregion

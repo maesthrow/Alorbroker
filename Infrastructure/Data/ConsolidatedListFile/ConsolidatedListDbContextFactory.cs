@@ -7,6 +7,12 @@ namespace Infrastructure.Data.ConsolidatedListFile
 
     public class ConsolidatedListDbContextFactory : IDesignTimeDbContextFactory<ConsolidatedListDbContext>
     {
+        #region Static Fields
+
+        private const string ConfigFileName = "config.json";
+
+        #endregion
+
         #region Interfaces
 
         #region IDesignTimeDbContextFactory<ConsolidatedListDbContext>
@@ -38,7 +44,11 @@ namespace Infrastructure.Data.ConsolidatedListFile
                                    configuration.GetConnectionString("DefaultConnection");
 
             if (string.IsNullOrEmpty(connectionString))
-                throw new InvalidOperationException("Не найдена строка подключения к БД");
+            {
+                var configFilePath = Path.Combine(Directory.GetCurrentDirectory(), ConfigFileName);
+
+                throw new InvalidOperationException($"Не найдена строка подключения к базе данных. Проверьте наличие файла '{configFilePath}'");
+            }
 
             return connectionString;
         }

@@ -11,8 +11,9 @@ namespace Domain.Interfaces
         {
             var serializer = new XmlSerializer(typeof(T));
 
-            using (var reader = new StreamReader(xmlFilePath))
-                return (T) await Task.Run(() => serializer.Deserialize(reader));
+            using var reader = new StreamReader(xmlFilePath);
+
+            return (T) await Task.Run(() => serializer.Deserialize(reader));
         }
 
         #endregion

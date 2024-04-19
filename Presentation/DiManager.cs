@@ -1,10 +1,11 @@
-﻿using Application.Interfaces;
-using Application.Services;
+﻿using Application.Services;
 using Domain.Interfaces;
 using Domain.Models.ConsolidatedListFile;
 using Infrastructure.Data.ConsolidatedListFile;
+using Infrastructure.FileProcessors;
 using Infrastructure.Mappers.ConsolidatedListFile;
 using Infrastructure.Services;
+using Infrastructure.UserInterfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,19 +13,29 @@ using Microsoft.Extensions.DependencyInjection;
 namespace ConsoleApp
 {
 
+    // класс для настройки внедрения зависимостей
     public static class DiManager
     {
+        #region Static Fields
+
+        private const string ConfigFileName = "appsettings.json";
+
+        #endregion
+
         #region Methods
 
+        // метод конфигурирует и возвращает объект ServiceProvider для DI контейнера
         public static IServiceProvider ConfigureServices()
         {
             var services = new ServiceCollection();
 
+            // регистрация контекста и репозиториев для работы с БД
             var connectionString = GetConnectionString();
             services.AddDbContext<ConsolidatedListDbContext>(options => options.UseSqlServer(connectionString));
 
             services.AddSingleton<IRepository<ConsolidatedList>, ConsolidatedListRepository>();
 
+            // регистрация мапперов для моделей xml-файлов и моделей базы данных
             services
                 .AddSingleton<ICollectionMapper<CONSOLIDATED_LISTINDIVIDUALSINDIVIDUALINDIVIDUAL_ALIAS, IndividualAlias>
                     , IndividualAliasMapper>();
@@ -65,10 +76,17 @@ namespace ConsoleApp
 
             services.AddSingleton<IMapper<CONSOLIDATED_LIST, ConsolidatedList>, ConsolidatedListMapper>();
 
+            // регистрация сервисов для обработки данных
             services.AddSingleton<IXmlDataService<CONSOLIDATED_LIST>, ConsolidatedListXmlDataService>();
 
             services.AddSingleton<IDataService<CONSOLIDATED_LIST>, ConsolidatedListDataService>();
 
+            services.AddSingleton<IFileProcessor, ConsolidatedListProcessor>();
+
+            // регистрация пользовательского интерфейса
+            services.AddSingleton<IUserInterface, ConsoleUserInterface>();
+
+            // регистрация основного класса Program
             services.AddSingleton<Program>();
 
             return services.BuildServiceProvider();
@@ -78,7 +96,7 @@ namespace ConsoleApp
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", true, true);
+                .AddJsonFile(ConfigFileName, true, true);
 
             IConfiguration configuration = builder.Build();
 
@@ -86,7 +104,12 @@ namespace ConsoleApp
                                    configuration.GetConnectionString("DefaultConnection");
 
             if (string.IsNullOrEmpty(connectionString))
-                throw new InvalidOperationException("Не найдена строка подключения к базе данных.");
+            {
+                var configFilePath = Path.Combine(Directory.GetCurrentDirectory(), ConfigFileName);
+
+                throw new InvalidOperationException(
+                    $"Не найдена строка подключения к базе данных. Проверьте наличие файла '{configFilePath}'");
+            }
 
             return connectionString;
         }
