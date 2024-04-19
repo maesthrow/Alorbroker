@@ -1,6 +1,4 @@
-﻿using Domain.Interfaces;
-using Infrastructure.FileProcessors;
-using Infrastructure.UserInterfaces;
+﻿using Infrastructure.FileProcessors;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ConsoleApp
@@ -10,18 +8,13 @@ namespace ConsoleApp
     {
         #region Fields
 
-        // словарь для хранения соответствий для файлов и их обработчиков: { имя_файла, IFileProcessor }
-        private readonly Dictionary<string, IFileProcessor> _fileSourceDict = new();
+        private readonly List<IFileProcessor> _fileProcessors;
 
         #endregion
 
         #region Constructors
 
-        public Program(IDataService<CONSOLIDATED_LIST> dataService)
-        {
-            _fileSourceDict.Add("consolidated-list.xml",
-                new ConsolidatedListProcessor(dataService, new ConsoleUserInterface()));
-        }
+        public Program(IEnumerable<IFileProcessor> fileProcessors) => _fileProcessors = fileProcessors.ToList();
 
         #endregion
 
@@ -41,7 +34,7 @@ namespace ConsoleApp
             }
         }
 
-        private static void UserStartProcessFile()
+        private static void UserStartProcessFiles()
         {
             Console.WriteLine("\nНажмите Enter для того, чтобы начать обработку файлов");
             Console.ReadLine();
@@ -56,24 +49,20 @@ namespace ConsoleApp
 
         private async Task Run()
         {
-            if (_fileSourceDict.Count == 0)
+            if (_fileProcessors.Count == 0)
             {
                 UserCloseApp("Не указаны файлы для загрузки данных.");
 
                 return;
             }
 
-            UserStartProcessFile();
+            UserStartProcessFiles();
 
-            foreach (var kvp in _fileSourceDict)
+            foreach (var processor in _fileProcessors)
             {
-                var filePath = kvp.Key;
-                var processor = kvp.Value;
-
                 try
                 {
-                    var fullFilePath = Path.Combine(Directory.GetCurrentDirectory(), filePath);
-                    await processor.ProcessData(fullFilePath);
+                    await processor.ProcessData();
                 }
                 catch (Exception ex)
                 {

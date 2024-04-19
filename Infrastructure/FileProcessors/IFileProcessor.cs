@@ -1,14 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Infrastructure.FileProcessors
+﻿namespace Infrastructure.FileProcessors
 {
 
     public interface IFileProcessor
     {
-        Task ProcessData(string filePath);
+        #region Properties
+
+        string FullFilePath { get; }
+
+        #endregion
+
+        #region Methods
+
+        Task ProcessData();
+
+        #endregion
     }
+
 }

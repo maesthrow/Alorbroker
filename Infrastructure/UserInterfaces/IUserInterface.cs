@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Infrastructure.UserInterfaces
+﻿namespace Infrastructure.UserInterfaces
 {
+
     public interface IUserInterface
     {
+        #region Methods
+
         void ShowMessage(string message);
+
+        #endregion
     }
+
 }

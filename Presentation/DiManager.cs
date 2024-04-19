@@ -83,8 +83,17 @@ namespace ConsoleApp
 
             services.AddSingleton<IFileProcessor, ConsolidatedListProcessor>();
 
+            services.AddSingleton<IFileProcessorFactory, FileProcessorFactory>();
+
             // регистрация пользовательского интерфейса
             services.AddSingleton<IUserInterface, ConsoleUserInterface>();
+
+            // регистрация списка обработчиков(процессоров) для всех возможных файлов
+            services.AddTransient<IEnumerable<IFileProcessor>>(sp =>
+                new List<IFileProcessor>
+                {
+                    sp.GetRequiredService<IFileProcessorFactory>().CreateProcessor("consolidated-list.xml")
+                });
 
             // регистрация основного класса Program
             services.AddSingleton<Program>();
