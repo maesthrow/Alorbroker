@@ -8,16 +8,17 @@ namespace Infrastructure.FileProcessors
     {
         #region Fields
 
-        private readonly IDataService<CONSOLIDATED_LIST> _dataService;
+        private readonly IDataService<CONSOLIDATED_LIST> _consolidatedListDataService;
         private readonly IUserInterface _userInterface;
 
         #endregion
 
         #region Constructors
 
-        public FileProcessorFactory(IDataService<CONSOLIDATED_LIST> dataService, IUserInterface userInterface)
+        public FileProcessorFactory(IDataService<CONSOLIDATED_LIST> consolidatedListDataService,
+            IUserInterface userInterface)
         {
-            _dataService = dataService;
+            _consolidatedListDataService = consolidatedListDataService;
             _userInterface = userInterface;
         }
 
@@ -27,13 +28,18 @@ namespace Infrastructure.FileProcessors
 
         #region IFileProcessorFactory
 
-        public IFileProcessor CreateProcessor(string fullFilePath)
+        public IFileProcessor CreateProcessor(string filePath)
         {
-            if (fullFilePath.EndsWith("consolidated-list.xml", StringComparison.Ordinal))
-                return new ConsolidatedListProcessor(fullFilePath, _dataService, _userInterface);
+            var fileName = Path.GetFileName(filePath);
 
-            throw new ArgumentException(
-                $"Не найдена реализация интерфейса IFileProcessor для файла '{Path.GetFileName(fullFilePath)}'");
+            return fileName switch
+            {
+                "consolidated-list.xml" =>
+                    new ConsolidatedListProcessor(filePath, _consolidatedListDataService, _userInterface),
+
+                var _ => throw new ArgumentException(
+                    $"Не найдена реализация интерфейса IFileProcessor для файла '{fileName}'")
+            };
         }
 
         #endregion

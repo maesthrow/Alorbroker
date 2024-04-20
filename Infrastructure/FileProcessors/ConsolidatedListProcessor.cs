@@ -15,10 +15,10 @@ namespace Infrastructure.FileProcessors
 
         #region Constructors
 
-        public ConsolidatedListProcessor(string fullFilePath, IDataService<CONSOLIDATED_LIST> dataService,
+        public ConsolidatedListProcessor(string filePath, IDataService<CONSOLIDATED_LIST> dataService,
             IUserInterface userInterface)
         {
-            FullFilePath = fullFilePath;
+            FilePath = filePath;
             _dataService = dataService;
             _userInterface = userInterface;
         }
@@ -29,18 +29,18 @@ namespace Infrastructure.FileProcessors
 
         #region IFileProcessor
 
-        public string FullFilePath { get; }
+        public string FilePath { get; }
 
         public async Task ProcessData()
         {
-            var filePath = Path.GetFileName(FullFilePath);
-            _userInterface.ShowMessage($"Загрузка данных из файла '{filePath}'...");
-            var data = await _dataService.LoadDataFromFile(FullFilePath);
+            var fileName = Path.GetFileName(FilePath);
+            _userInterface.ShowMessage($"Загрузка данных из файла '{fileName}'...");
+            var data = await _dataService.LoadDataFromFile(FilePath);
 
             _userInterface.ShowMessage("Сохранение в базу данных...");
             await _dataService.SaveData(data);
 
-            _userInterface.ShowMessage($"Файл '{filePath}' обработан успешно.");
+            _userInterface.ShowMessage($"Файл '{fileName}' обработан успешно.");
         }
 
         #endregion

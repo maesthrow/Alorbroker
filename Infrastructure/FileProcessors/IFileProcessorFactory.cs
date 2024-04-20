@@ -5,7 +5,7 @@
     {
         #region Methods
 
-        IFileProcessor CreateProcessor(string fullFilePath);
+        IFileProcessor CreateProcessor(string filePath);
 
         #endregion
     }

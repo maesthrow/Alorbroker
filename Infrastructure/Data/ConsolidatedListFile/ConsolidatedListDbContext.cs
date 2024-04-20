@@ -53,7 +53,7 @@ namespace Infrastructure.Data.ConsolidatedListFile
                 { } t when t == typeof(Entity) => Entities as DbSet<T>,
                 { } t when t == typeof(EntityAlias) => EntityAliases as DbSet<T>,
                 { } t when t == typeof(EntityAddress) => EntityAddresses as DbSet<T>,
-                var _ => throw new ArgumentException("Unsupported type")
+                var _ => throw new ArgumentException("Неизвестный тип модели данных")
             };
         }
 

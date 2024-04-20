@@ -5,7 +5,7 @@
     {
         #region Properties
 
-        string FullFilePath { get; }
+        string FilePath { get; }
 
         #endregion
 
