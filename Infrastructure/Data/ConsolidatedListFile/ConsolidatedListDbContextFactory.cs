@@ -47,7 +47,8 @@ namespace Infrastructure.Data.ConsolidatedListFile
             {
                 var configFilePath = Path.Combine(Directory.GetCurrentDirectory(), ConfigFileName);
 
-                throw new InvalidOperationException($"Не найдена строка подключения к базе данных. Проверьте наличие файла '{configFilePath}'");
+                throw new InvalidOperationException(
+                    $"Не найдена строка подключения к базе данных. Проверьте наличие файла '{configFilePath}'");
             }
 
             return connectionString;
